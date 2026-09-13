@@ -50,5 +50,37 @@ export const loginUser = (login, password) => {
     return user;
   };
 };
+export const fetchUser = () => {
+  return async (dispatch) => {
+    const response = await fetch(`${API_URL}/auth/user`, {
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      dispatch(clearUser());
+      return null;
+    }
+
+    const user = await response.json();
+
+    dispatch(setUser(user));
+
+    return user;
+  };
+};
+export const logoutUser = () => {
+  return async (dispatch) => {
+    const response = await fetch(`${API_URL}/auth/logout`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      throw new Error("Logout failed");
+    }
+
+    dispatch(clearUser());
+  };
+};
 
 export default userSlice.reducer;

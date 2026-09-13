@@ -1,3 +1,6 @@
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import Header from "./components/Header";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Home from "./pages/Home";
@@ -7,10 +10,19 @@ import AdEdit from "./pages/AdEdit";
 import SearchResults from "./pages/SearchResults";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
+import { fetchUser } from "./redux/userRedux";
 
 const App = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchUser());
+  }, [dispatch]);
+
   return (
     <BrowserRouter>
+      <Header />
+
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/ads/:id" element={<Ad />} />
