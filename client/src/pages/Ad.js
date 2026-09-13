@@ -1,15 +1,18 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 import { fetchAds, getAdById } from "../redux/adsRedux";
-import { IMGS_URL } from "../config";
+import { getUser } from "../redux/userRedux";
+import { API_URL, IMGS_URL } from "../config";
 
 const Ad = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const ad = useSelector((state) => getAdById(state, id));
+  const user = useSelector(getUser);
 
   useEffect(() => {
     dispatch(fetchAds());
@@ -21,6 +24,30 @@ const Ad = () => {
 
   const imageName = ad.image?.replace("/uploads/", "");
   const avatarName = ad.author?.avatar?.replace("/uploads/", "");
+
+  const isOwner = user && ad.author?._id && user._id === ad.author._id;
+
+  const handleDelete = async () => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this ad?",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    const response = await fetch(`${API_URL}/api/ads/${id}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      alert("Failed to delete ad");
+      return;
+    }
+
+    navigate("/");
+  };
 
   return (
     <div>
@@ -53,6 +80,18 @@ const Ad = () => {
         <strong>Published:</strong>{" "}
         {new Date(ad.publicationDate).toLocaleDateString()}
       </p>
+
+      {isOwner && (
+        <div>
+          <Link to={`/ads/${ad._id}/edit`}>Edit</Link>
+
+          {" | "}
+
+          <button type="button" onClick={handleDelete}>
+            Delete
+          </button>
+        </div>
+      )}
 
       <hr />
 
