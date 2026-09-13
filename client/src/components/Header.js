@@ -28,6 +28,9 @@ const Header = () => {
 
         {isLogged ? (
           <>
+            <Link to="/ads/add">Add ad</Link>
+
+            {" | "}
             <span>Logged as: {user.login}</span>
 
             {" | "}
