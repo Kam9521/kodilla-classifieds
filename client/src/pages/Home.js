@@ -10,10 +10,22 @@ const Home = () => {
   const navigate = useNavigate();
 
   const ads = useSelector(getAllAds);
+
   const [searchPhrase, setSearchPhrase] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    dispatch(fetchAds());
+    setLoading(true);
+    setError("");
+
+    dispatch(fetchAds())
+      .catch((err) => {
+        setError(err.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, [dispatch]);
 
   const handleSubmit = (e) => {
@@ -29,10 +41,10 @@ const Home = () => {
   };
 
   return (
-    <div>
+    <div style={{ padding: "20px" }}>
       <h1>Ads</h1>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} style={{ marginBottom: "25px" }}>
         <input
           type="text"
           value={searchPhrase}
@@ -43,10 +55,20 @@ const Home = () => {
         <button type="submit">Search</button>
       </form>
 
-      {ads.length === 0 ? (
-        <p>No ads available.</p>
-      ) : (
-        <div>
+      {loading && <p>Loading...</p>}
+
+      {error && <p>{error}</p>}
+
+      {!loading && !error && ads.length === 0 && <p>No ads available.</p>}
+
+      {!loading && !error && ads.length > 0 && (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+            gap: "20px",
+          }}
+        >
           {ads.map((ad) => (
             <AdSummary key={ad._id} ad={ad} />
           ))}

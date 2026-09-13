@@ -11,7 +11,10 @@ const adsSlice = createSlice({
 
 export const { setAds } = adsSlice.actions;
 
-export const getAllAds = (state) => state.ads;
+export const getAllAds = (state) =>
+  [...state.ads].sort(
+    (a, b) => new Date(b.publicationDate) - new Date(a.publicationDate),
+  );
 
 export const getAdById = (state, id) => state.ads.find((ad) => ad._id === id);
 
