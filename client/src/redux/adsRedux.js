@@ -28,5 +28,20 @@ export const fetchAds = () => {
     dispatch(setAds(ads));
   };
 };
+export const fetchSearchResults = (searchPhrase) => {
+  return async (dispatch) => {
+    const response = await fetch(
+      `${API_URL}/api/ads/search/${encodeURIComponent(searchPhrase)}`,
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch search results");
+    }
+
+    const ads = await response.json();
+
+    dispatch(setAds(ads));
+  };
+};
 
 export default adsSlice.reducer;
