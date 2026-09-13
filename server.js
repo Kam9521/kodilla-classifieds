@@ -38,25 +38,26 @@ app.use(
 
 app.use(express.static(path.join(__dirname, "public")));
 
+// API routes must be before React fallback
+app.use("/auth", authRoutes);
+app.use("/api", adsRoutes);
+
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "client", "build")));
 
-  app.get("*", (req, res) => {
+  app.get("/{*splat}", (req, res) => {
     res.sendFile(path.join(__dirname, "client", "build", "index.html"));
   });
+} else {
+  app.get("/", (req, res) => {
+    res.send("Classifieds API is running");
+  });
 }
-
-app.use("/auth", authRoutes);
-app.use("/api", adsRoutes);
 
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("MongoDB connection error:", err.message));
-
-app.get("/", (req, res) => {
-  res.send("Classifieds API is running");
-});
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
